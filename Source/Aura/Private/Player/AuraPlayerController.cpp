@@ -5,11 +5,18 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
 	// 开启网络复制
 	bReplicates = true;
+}
+
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+	CursorTrace();
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -66,5 +73,42 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 		// 分别使用向前后向右的向量
 		ControllerPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControllerPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+	}
+}
+
+void AAuraPlayerController::CursorTrace()
+{
+	FHitResult CurSorHit;
+
+	// 鼠标命中
+	GetHitResultUnderCursor(ECC_Visibility, false, CurSorHit);
+
+	if (!CurSorHit.bBlockingHit) return;
+
+	LastActor = ThisActor;
+	ThisActor = Cast<IEnemyInterface>(CurSorHit.GetActor());
+
+	if (LastActor == nullptr)
+	{
+		if (ThisActor != nullptr)
+		{
+			ThisActor->HighlightActor();
+		}
+	}
+	else
+	{
+		if (ThisActor == nullptr)
+		{
+			LastActor->UnHighlightActor();
+		}
+		else
+		{
+			if (LastActor != ThisActor)
+			{
+				LastActor->UnHighlightActor();
+				ThisActor->HighlightActor();
+			}
+			
+		}
 	}
 }

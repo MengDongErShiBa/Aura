@@ -12,6 +12,8 @@ AAuraPlayerState::AAuraPlayerState()
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	// 开启网络复制
 	AbilitySystemComponent->SetIsReplicated(true);
+	// 玩家需要全部复制
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	// 属性
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");

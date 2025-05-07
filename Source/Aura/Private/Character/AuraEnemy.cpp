@@ -15,6 +15,8 @@ AAuraEnemy::AAuraEnemy()
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	// 开启网络复制
 	AbilitySystemComponent->SetIsReplicated(true);
+	// 敌人最小化同步
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	// 属性
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
@@ -35,4 +37,12 @@ void AAuraEnemy::UnHighlightActor()
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
+}
+
+void AAuraEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	check(AbilitySystemComponent);
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
